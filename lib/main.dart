@@ -1,47 +1,88 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(MyApp());  // start App
+  runApp(
+      MaterialApp(
+          home: MyApp()
+      )
+  );// start App
 }
 
-class MyApp extends StatelessWidget {
+
+
+class MyApp extends StatefulWidget {
   MyApp({Key? key}) : super(key: key);
 
-  var tmp =1;
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  var total =3;
+  var name = ['기면증','김현증','기면중'];
+
+  addOne(){
+    setState((){
+      total++;
+    });
+  }
+
+  addName(a){
+    setState(() {
+      name.add(a);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
+    return Scaffold(
           floatingActionButton: FloatingActionButton(
-            child: Text(tmp.toString()),
             onPressed: (){
-              print(tmp);
-              tmp++;
+              showDialog(context: context, builder: (context){
+                return DialogUI(addOne:addOne, addName: addName);
+              });
             },
           ),
-          appBar:AppBar(),
+          appBar:AppBar(title: Text(total.toString()),),
           body:ListView.builder(
-            itemCount:3,
+            itemCount: name.length,
             itemBuilder: (c,i){
               return ListTile(
                 leading: Image.asset('hams.png'),
-                title: Text('김이름'),
+                title: Text(name[i]),
               );
             }
         )
-      )
-    );
+      );
   }
 }
 
-
-class ShopItem extends StatelessWidget {
-  const ShopItem({Key? key}) : super(key: key);
+class DialogUI extends StatelessWidget {
+  DialogUI({Key? key,this.addOne, this.addName}) : super(key: key);
+  final addOne;
+  final addName;
+  var inputData = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      child: Text('안녕'),
+    return Dialog(
+      child: Container(
+        padding: EdgeInsets.all(20),
+        width: 300,
+        height: 300,
+        child: Column(
+          children: [
+            TextField(controller: inputData ,),
+            TextButton(child: Text('완료'),onPressed: (){
+              addOne();
+              addName(inputData.text);
+            }),
+            TextButton(child: Text('취소'),onPressed: (){
+              Navigator.pop(context);
+            }),
+          ],
+        )
+      )
     );
   }
 }
