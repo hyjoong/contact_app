@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 void main() {
   runApp(
@@ -18,6 +19,23 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+
+  getPermission() async {
+    var status = await Permission.contacts.status;
+    if(status.isGranted){
+      print("allowed");
+    }
+    else if(status.isDenied){
+      print('rejected');
+      Permission.contacts.request();  // 거절되어 있는 상태면 허락해달라고 팝업을 띄움
+    }
+  }
+
+  @override
+  void initState() {  // initState 안에 적은 코드는 위젯 로드될 떄 한번 실행이 된다
+    super.initState();
+  }
+
   var total =3;
   var name = ['기면증','김현증','기면중'];
 
@@ -43,7 +61,9 @@ class _MyAppState extends State<MyApp> {
               });
             },
           ),
-          appBar:AppBar(title: Text(total.toString()),),
+          appBar:AppBar(title: Text(total.toString()), actions: [
+            IconButton(onPressed: (){ getPermission();}, icon: Icon(Icons.contacts))
+          ],),
           body:ListView.builder(
             itemCount: name.length,
             itemBuilder: (c,i){
