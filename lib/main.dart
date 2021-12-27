@@ -1,3 +1,4 @@
+import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -24,6 +25,15 @@ class _MyAppState extends State<MyApp> {
     var status = await Permission.contacts.status;
     if(status.isGranted){
       print("allowed");
+      var contacts = await ContactsService.getContacts();
+      print(contacts);
+      setState(() {
+        name = contacts;
+      });
+      // var newPerson = Contact();
+      // newPerson.givenName = '현증';
+      // newPerson.familyName = '김';
+      // ContactsService.addContact(newPerson);
     }
     else if(status.isDenied){
       print('rejected');
@@ -37,7 +47,8 @@ class _MyAppState extends State<MyApp> {
   }
 
   var total =3;
-  var name = ['기면증','김현증','기면중'];
+  var name = [];
+  var like =[0,0,0];
 
   addOne(){
     setState((){
@@ -69,7 +80,7 @@ class _MyAppState extends State<MyApp> {
             itemBuilder: (c,i){
               return ListTile(
                 leading: Image.asset('hams.png'),
-                title: Text(name[i]),
+                title: Text(name[i].givenName),
               );
             }
         )
