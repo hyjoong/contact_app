@@ -47,14 +47,16 @@ class _MyAppState extends State<MyApp> {
   }
 
   var total =3;
-  var name = [];
-  var like =[0,0,0];
+  List<Contact> name = [];
+  var like = [0,0,0];
 
   addOne(){
     setState((){
       total++;
     });
   }
+
+  C:\"Program Files"\Android\"Android Studio"\jre\bin\keytool -genkey -v -keystore C:\Users\khj\Desktop\flutter\flutter_keys\upload-keystore.jks -storetype JKS -keyalg RSA -keysize 2048 -validity 10000 -alias upload
 
   addName(a){
     setState(() {
@@ -80,7 +82,7 @@ class _MyAppState extends State<MyApp> {
             itemBuilder: (c,i){
               return ListTile(
                 leading: Image.asset('hams.png'),
-                title: Text(name[i].givenName),
+                title: Text(name[i].givenName??'no Name'),
               );
             }
         )
