@@ -5,12 +5,24 @@ import 'package:permission_handler/permission_handler.dart';
 void main() {
   runApp(
       MaterialApp(
+        theme: ThemeData(
+          iconTheme: IconThemeData( // 모든 아이콘들 스타일
+            color: Colors.blue
+          ),
+          appBarTheme: AppBarTheme(
+            color:Colors.grey,
+            actionsIconTheme: IconThemeData(color: Colors.blue)
+          ),
+          textTheme: TextTheme(
+            bodyText2: TextStyle(color: Colors.red)
+          )
+        ),
           home: MyApp()
       )
   );// start App
 }
 
-
+var a = TextStyle();
 
 class MyApp extends StatefulWidget {
   MyApp({Key? key}) : super(key: key);
@@ -56,7 +68,7 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
-  C:\"Program Files"\Android\"Android Studio"\jre\bin\keytool -genkey -v -keystore C:\Users\khj\Desktop\flutter\flutter_keys\upload-keystore.jks -storetype JKS -keyalg RSA -keysize 2048 -validity 10000 -alias upload
+//  C:\"Program Files"\Android\"Android Studio"\jre\bin\keytool -genkey -v -keystore C:\Users\khj\Desktop\flutter\flutter_keys\upload-keystore.jks -storetype JKS -keyalg RSA -keysize 2048 -validity 10000 -alias upload
 
   addName(a){
     setState(() {
@@ -85,7 +97,16 @@ class _MyAppState extends State<MyApp> {
                 title: Text(name[i].givenName??'no Name'),
               );
             }
-        )
+        ),
+      bottomNavigationBar: BottomNavigationBar(
+        showSelectedLabels: false,
+      showUnselectedLabels: false,
+      items: [
+        BottomNavigationBarItem(icon: Icon(Icons.home_outlined),label: 'Home'),
+        BottomNavigationBarItem(icon: Icon(Icons.shopping_bag_outlined),label: 'Shop'),
+        BottomNavigationBarItem(icon: Icon(Icons.phone_android_outlined),label: 'Phone')
+      ],
+    )
       );
   }
 }
