@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 
 void main() {
   runApp(
@@ -18,7 +20,8 @@ void main() {
           textTheme: TextTheme(
             bodyText2: TextStyle(color: Colors.red)
           )
-        ), 
+        ),
+
           home: MyApp()
       )
   );// start App
@@ -36,6 +39,32 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   var tab = 0;
   var data=[];
+  var userImage;
+  var userContent;
+
+
+  addMyData(){
+    print("addData..");
+    var myData ={
+      'id': data.length,
+      'image': userImage,
+      'likes': 5,
+      'date': "July 5",
+      'content': userContent,
+      'liked': false,
+      'user': "Hyjoong"
+    };
+    setState(() {
+      data.add(myData);
+    });
+  }
+
+  setUserContent(a){
+    setState(() {
+      print(a);
+      userContent = a;
+    });
+  }
 
   getPermission() async {
     var status = await Permission.contacts.status;
@@ -58,7 +87,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   getData()async{
-    var res = await http.get(Uri.parse('url'));
+    var res = await http.get(Uri.parse('https://codingapple1.github.io/app/data.json'));
     if(res.statusCode == 200){
       print("Data load success");
     } else{
@@ -102,9 +131,28 @@ class _MyAppState extends State<MyApp> {
           });
         },
       ),
-      appBar:AppBar(title: Text(total.toString()), actions: [
-        IconButton(onPressed: (){ getPermission();}, icon: Icon(Icons.contacts))
-      ],),
+      appBar:AppBar(
+          title: Text(total.toString()),
+          actions: [
+            IconButton(
+              icon: [Icon(Icons.add_box_outlined),Icon(Icons.contacts)][tab],
+              onPressed: () async{
+                var picker = ImagePicker();
+                var image = await picker.pickImage(source: ImageSource.gallery);
+                if(image!=null) { // 이미지를 골랐으면
+                  setState(() {
+                    userImage = File(image.path);
+                  });
+                }
+
+                Navigator.push(context,
+                  MaterialPageRoute(builder: (c) =>Upload(userImage:userImage, setUserContent: setUserContent, addMyData:addMyData))
+                  );
+                },
+                iconSize:30,
+            )
+          ]
+        ),
       body: [Home(data:data),ContactHome(name:name)][tab],
       bottomNavigationBar: BottomNavigationBar(
         showSelectedLabels: false,
@@ -172,18 +220,43 @@ class ContactHome extends StatelessWidget {
   }
 }
 
-class Home extends StatelessWidget {
+class Home extends StatefulWidget {
   const Home({Key? key,this.data}) : super(key: key);
   final data;
+
+  @override
+  State<Home> createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
+  var scroll = ScrollController();
+
+  getMore() async{
+    var res = await http.get(Uri.parse('https://codingapple1.github.io/app/more1.json'));
+    var decodeRes = jsonDecode(res.body);
+
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    scroll.addListener(() {
+      if(scroll.position.pixels == scroll.position.maxScrollExtent){  // 유저가 맨 밑까지 스크롤 했는지 검사
+        getMore();
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    print(data);
-    if(data.isNotEmpty){
-      return ListView.builder(itemCount:3,itemBuilder: (c,i){
+    if(widget.data.isNotEmpty){
+      return ListView.builder(itemCount:widget.data.length, controller: scroll, itemBuilder: (c,i){
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Image.network(data[i]['image']),
+            widget.data[i]['image'].runtimeType ==String
+                ?Image.network(widget.data[i]['image'])
+                :Image.file(widget.data[i]['image']),
             Container(
               constraints: BoxConstraints(maxWidth: 600),
               padding: EdgeInsets.all(20),
@@ -191,9 +264,9 @@ class Home extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(data[i]['date']),
-                  Text(data[i]['user']),
-                  Text(data[i]['content']),
+                  Text(widget.data[i]['date']),
+                  Text('Like: ${widget.data[i]['likes']}'),
+                  Text(widget.data[i]['content']),
                 ],
               ),
             )
@@ -203,7 +276,38 @@ class Home extends StatelessWidget {
     }else{
       return Text("Loding...");
     }
+  }
+}
 
+class Upload extends StatelessWidget {
+  const Upload({Key? key,this.userImage, this.setUserContent, this.addMyData}) : super(key: key);
+  final userImage;
+  final setUserContent;
+  final addMyData;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar( actions: [
+        IconButton(onPressed: (){
+          addMyData();
+        },icon: Icon(Icons.send)),
+      ],),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Image.file(userImage),
+          Text("Image Upload modal"),
+          TextField(onChanged: (text){
+            setUserContent(text);
+          },),
+          IconButton(
+              onPressed: (){
+                Navigator.pop(context);
+              }, icon: Icon(Icons.close)),
+        ],
+      )
+    );
   }
 }
 
