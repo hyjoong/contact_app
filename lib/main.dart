@@ -1,4 +1,5 @@
 import 'package:contacts_service/contacts_service.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:http/http.dart' as http;
@@ -278,6 +279,19 @@ class _HomeState extends State<Home> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  GestureDetector(
+                    child: Text(widget.data[i]['user']),
+                    onTap: (){
+                      Navigator.push(context,
+                        // CupertinoPageRoute(builder: (c)=>Profile()),
+                        PageRouteBuilder(
+                          pageBuilder: (c, a1, a2) => Profile(),
+                          transitionsBuilder: (c, a1, a2, child)=>
+                              FadeTransition(opacity: a1,child: child)
+                        )
+                      );
+                    },
+                  ),
                   Text(widget.data[i]['date']),
                   Text('Like: ${widget.data[i]['likes']}'),
                   Text(widget.data[i]['content']),
@@ -324,4 +338,17 @@ class Upload extends StatelessWidget {
     );
   }
 }
+
+class Profile extends StatelessWidget {
+  const Profile({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(),
+      body: Text('프로필 이미지'),
+    );
+  }
+}
+
 
