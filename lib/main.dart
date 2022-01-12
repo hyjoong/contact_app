@@ -7,24 +7,28 @@ import 'dart:convert';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
 
 void main() {
   runApp(
-      MaterialApp(
-        theme: ThemeData(
-          iconTheme: IconThemeData( // 모든 아이콘들 스타일
-            color: Colors.blue
+      ChangeNotifierProvider(
+        create: (c) => Store1(),
+        child: MaterialApp(
+          theme: ThemeData(
+            iconTheme: IconThemeData( // 모든 아이콘들 스타일
+              color: Colors.blue
+            ),
+            appBarTheme: AppBarTheme(
+              color:Colors.grey,
+              actionsIconTheme: IconThemeData(color: Colors.blue)
+            ),
+            textTheme: TextTheme(
+              bodyText2: TextStyle(color: Colors.red)
+            )
           ),
-          appBarTheme: AppBarTheme(
-            color:Colors.grey,
-            actionsIconTheme: IconThemeData(color: Colors.blue)
-          ),
-          textTheme: TextTheme(
-            bodyText2: TextStyle(color: Colors.red)
-          )
-        ),
 
-          home: MyApp()
+            home: MyApp()
+        ),
       )
   );// start App
 }
@@ -339,14 +343,28 @@ class Upload extends StatelessWidget {
   }
 }
 
+class Store1 extends ChangeNotifier {
+  var name = 'hyjoong';
+  changeName(){
+    name = 'hyunjjang';
+    notifyListeners(); // state 수정 후 재 랜더링 해주는 code
+  }
+}
+
 class Profile extends StatelessWidget {
   const Profile({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
-      body: Text('프로필 이미지'),
+      appBar: AppBar(title: Text(context.watch<Store1>().name),),
+      body: Column(
+        children: [
+          ElevatedButton(onPressed: (){
+            context.read<Store1>().changeName();
+          }, child: Text('버튼'))
+        ],
+      ),
     );
   }
 }
