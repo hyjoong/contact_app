@@ -11,8 +11,11 @@ import 'package:provider/provider.dart';
 
 void main() {
   runApp(
-      ChangeNotifierProvider(
-        create: (c) => Store1(),
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (c) => Store1()),
+          ChangeNotifierProvider(create: (c) => Store2()),
+        ],
         child: MaterialApp(
           theme: ThemeData(
             iconTheme: IconThemeData( // 모든 아이콘들 스타일
@@ -343,11 +346,32 @@ class Upload extends StatelessWidget {
   }
 }
 
+class Store2 extends ChangeNotifier {
+  var name = 'hyjoong kim';
+}
+
 class Store1 extends ChangeNotifier {
-  var name = 'hyjoong';
-  changeName(){
-    name = 'hyunjjang';
-    notifyListeners(); // state 수정 후 재 랜더링 해주는 code
+  var follower = 0;
+  var friend = false;
+  var profileImage =  [];
+
+  getData() async{
+    var result = await http.get(Uri.parse('https://codingapple1.github.io/app/profile.json'));
+    var result2 = jsonDecode(result.body);
+    
+    profileImage = result2;
+    notifyListeners();
+  }
+
+  addFollower(){
+    if(friend == false) {
+      follower++;
+      friend = true;
+    } else{
+      follower--;
+      friend = false;
+    }
+    notifyListeners();
   }
 }
 
@@ -357,12 +381,21 @@ class Profile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(context.watch<Store1>().name),),
-      body: Column(
+      appBar: AppBar(title: Text(context.watch<Store2>().name),),
+      body: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
+          CircleAvatar(
+            radius: 30,
+            backgroundColor: Colors.grey,
+          ),
+          Text('팔로워 ${context.watch<Store1>().follower}명'),
           ElevatedButton(onPressed: (){
-            context.read<Store1>().changeName();
-          }, child: Text('버튼'))
+            context.read<Store1>().addFollower();
+          }, child: Text('팔로우')),
+          ElevatedButton(onPressed: (){
+            context.read<Store1>().getData();
+          }, child: Text('사진가져오기'))
         ],
       ),
     );
