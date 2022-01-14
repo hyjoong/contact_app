@@ -1,3 +1,4 @@
+import 'package:contact/notification.dart';
 import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -123,6 +124,7 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {  // initState 안에 적은 코드는 위젯 로드될 떄 한번 실행이 된다
     super.initState();
+    initNotification(context);
     getData();
     saveData();
   }
@@ -146,12 +148,15 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        onPressed: (){
-          showDialog(context: context, builder: (context){
-            return DialogUI(addOne:addOne, addName: addName);
-          });
-        },
+        floatingActionButton: FloatingActionButton(child: Text('+'),
+          onPressed: (){
+            showNotification();
+          },
+        // onPressed: (){
+        //   showDialog(context: context, builder: (context){
+        //     return DialogUI(addOne:addOne, addName: addName);
+        //   });
+        // },
       ),
       appBar:AppBar(
           title: Text(total.toString()),
@@ -358,7 +363,7 @@ class Store1 extends ChangeNotifier {
   getData() async{
     var result = await http.get(Uri.parse('https://codingapple1.github.io/app/profile.json'));
     var result2 = jsonDecode(result.body);
-    
+
     profileImage = result2;
     notifyListeners();
   }
