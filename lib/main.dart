@@ -148,9 +148,9 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        floatingActionButton: FloatingActionButton(child: Text('+'),
+        floatingActionButton: FloatingActionButton(child: Text('+.'),
           onPressed: (){
-            showNotification();
+            showNotification2();
           },
         // onPressed: (){
         //   showDialog(context: context, builder: (context){
