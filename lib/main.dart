@@ -1,4 +1,5 @@
 import 'package:contact/notification.dart';
+import 'package:contact/shop.dart';
 import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +11,15 @@ import 'dart:io';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
 
-void main() {
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
   runApp(
       MultiProvider(
         providers: [
@@ -180,7 +189,8 @@ class _MyAppState extends State<MyApp> {
             )
           ]
         ),
-      body: [Home(data:data),ContactHome(name:name)][tab],
+      body: [Home(data:data, addData: addData),Shop()][tab],
+
       bottomNavigationBar: BottomNavigationBar(
         showSelectedLabels: false,
         showUnselectedLabels: false,
@@ -190,9 +200,8 @@ class _MyAppState extends State<MyApp> {
           });
         },
         items: [
-          BottomNavigationBarItem(icon: Icon(Icons.home_outlined),label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.shopping_bag_outlined),label: 'Shop'),
-          BottomNavigationBarItem(icon: Icon(Icons.phone_android_outlined),label: 'Phone')
+          BottomNavigationBarItem(icon: Icon(Icons.home_outlined),label: '홈'),
+          BottomNavigationBarItem(icon: Icon(Icons.shopping_bag_outlined),label: '샵'),
       ],
     )
       );
